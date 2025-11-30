@@ -25,6 +25,16 @@
       overflow-x: hidden;
       position: relative;
     }
+
+    .main-title {
+      text-align: center;
+      color: white;
+      font-size: 3em;
+      margin-bottom: 30px;
+      text-shadow: 0 4px 8px rgba(0,0,0,0.5), 0 2px 4px rgba(0,0,0,0.3);
+      font-family: 'Playfair Display', serif;
+      font-weight: 700;
+    }
     
     /* Snowflakes */
     .snowflake {
@@ -51,33 +61,7 @@
       position: relative;
       z-index: 2;
     }
-    
-    /* Logo Header */
-    .logo-header {
-      text-align: center;
-      margin-bottom: 30px;
-    }
-    
-    .logo-header img {
-      max-width: 500px;
-      width: 100%;
-      height: auto;
-      filter: drop-shadow(0 8px 20px rgba(0,0,0,0.6)) drop-shadow(0 4px 10px rgba(0,0,0,0.4));
-    }
-    
-    /* Fallback wenn kein Bild geladen wird */
-    h1 {
-      text-align: center;
-      color: white;
-      font-size: 3em;
-      margin-bottom: 30px;
-      text-shadow: 0 4px 8px rgba(0,0,0,0.5), 0 2px 4px rgba(0,0,0,0.3);
-      font-family: 'Playfair Display', serif;
-      font-weight: 700;
-    }
-    
-    .hidden { display: none; }
-    
+
     /* Calendar Styles */
     #calendar {
       color: white;
@@ -348,17 +332,6 @@
       position: relative;
     }
     
-    @keyframes slideIn {
-      from {
-        transform: translateY(-50px);
-        opacity: 0;
-      }
-      to {
-        transform: translateY(0);
-        opacity: 1;
-      }
-    }
-    
     .modal-content h2 {
       color: #FFFFFF;
       font-family: 'Playfair Display', serif;
@@ -427,11 +400,6 @@
       .logo-header img {
         max-width: 300px;
       }
-      
-      .lock-icon {
-        width: 90px;
-        height: 100px;
-      }
     }
     
     @media (max-width: 500px) {
@@ -439,19 +407,16 @@
         grid-template-columns: repeat(2, 1fr);
       }
       
-      .logo-header img {
-        max-width: 250px;
+      .main-title {
+        font-size: 2.3em;
       }
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <!-- Logo Header - Ersetze "bgr.png" mit deinem Bildpfad -->
-    <div class="logo-header">
-      <img src="bgr.png" alt="Adventskalender" onerror="this.style.display='none'; document.getElementById('fallback-title').style.display='block';">
-    </div>
-    <h1 id="fallback-title" style="display: none;">🎄 Adventskalender 🎄</h1>
+
+    <h1 class="main-title">🎄 Adventskalender 🎄</h1>
     
     <div id="calendar">
       <div class="welcome-section">
@@ -490,12 +455,11 @@
     }
     
     setInterval(createSnowflake, 200);
-    
     for (let i = 0; i < 50; i++) {
       setTimeout(createSnowflake, i * 100);
     }
 
-    // Platzhalter-Texte für jedes Türchen
+    // Platzhalter-Texte
     const storyTexts = {};
     for (let i = 1; i <= 24; i++) {
       storyTexts[i] = `<p>PLATZHALTER</p>`;
@@ -503,7 +467,7 @@
 
     function openStoryModal(doorNumber) {
       document.getElementById('modalTitle').innerText = 'Türchen ' + doorNumber;
-      document.getElementById('modalStory').innerHTML = storyTexts[doorNumber] || '<p>PLATZHALTER</p>';
+      document.getElementById('modalStory').innerHTML = storyTexts[doorNumber];
       document.getElementById('storyModal').classList.add('active');
     }
 
@@ -511,41 +475,29 @@
       document.getElementById('storyModal').classList.remove('active');
     }
 
-    // Modal schließen beim Klick außerhalb
     document.addEventListener('click', function(event) {
       const modal = document.getElementById('storyModal');
-      if (event.target === modal) {
-        closeStoryModal();
-      }
+      if (event.target === modal) closeStoryModal();
     });
 
-    // Tür-Logik: Türen in Dezember, alle Tage bis inkl. heutigem Datum freigeschaltet
+    // Türen-Logik: Alle Tage bis heutiger Tag freigeschaltet
     function isDoorUnlocked(doorNumber) {
       const now = new Date();
       const currentDay = now.getDate();
-      const currentMonth = now.getMonth() + 1; // 0-indexed
+      const currentMonth = now.getMonth() + 1;
       
-      if (currentMonth === 12 && doorNumber <= currentDay) {
-        return true; // 1..heutiger Tag sind freigeschaltet
-      }
-      return false;
+      return (currentMonth === 12 && doorNumber <= currentDay);
     }
 
     function toggleDoor(i) {
       const container = document.getElementById("door-container-" + i);
       
-      // Check if door is locked
       if (container.classList.contains("locked")) {
         alert("Dieses Türchen kann erst am " + i + ". Dezember geöffnet werden! 🎄");
         return;
       }
       
-      // Nur auf/zu klappen (keine Persistenz nötig)
-      if (container.classList.contains("open")) {
-        container.classList.remove("open");
-      } else {
-        container.classList.add("open");
-      }
+      container.classList.toggle("open");
     }
 
     function buildCalendar() {
@@ -557,16 +509,14 @@
         doorContainer.className = "door-container";
         doorContainer.id = "door-container-" + i;
         
-        const isUnlocked = isDoorUnlocked(i);
-        if (!isUnlocked) {
-          doorContainer.classList.add("locked");
-        }
+        const unlocked = isDoorUnlocked(i);
+        if (!unlocked) doorContainer.classList.add("locked");
         
-        const lockHTML = !isUnlocked ? `
+        const lockHTML = unlocked ? "" : `
           <div class="lock-container">
             <img src="schloss.png" class="lock-icon" alt="Locked">
           </div>
-        ` : '';
+        `;
         
         doorContainer.innerHTML = `
           <div class="door-content">
@@ -579,7 +529,8 @@
             <div class="door-number">${i}</div>
           </div>
           <div class="door-right" onclick="toggleDoor(${i})">
-            <img src="zuckerstange.png" class="crystal-icon" alt="Crystal" onerror="this.style.display='none'; this.parentElement.innerHTML += '<div class=\\'door-number\\'>🎁</div>';">
+            <img src="zuckerstange.png" class="crystal-icon" alt="Crystal" 
+                 onerror="this.style.display='none'; this.parentElement.innerHTML += '<div class=\\'door-number\\'>🎁</div>';">
           </div>
         `;
         
@@ -587,7 +538,6 @@
       }
     }
 
-    // Kalender initial aufbauen
     buildCalendar();
   </script>
 </body>
