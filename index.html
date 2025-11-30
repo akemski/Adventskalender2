@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Adventskalender</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body { 
+      font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #08121e 0%, #13213c 25%, #253356 50%, #111723 75%, #08121e 100%);
+      background-attachment: fixed;
+      padding: 20px;
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+    }
+    
+    /* Snowflakes */
+    .snowflake {
+      position: fixed;
+      top: -10px;
+      color: white;
+      font-size: 1em;
+      user-select: none;
+      z-index: 1;
+      pointer-events: none;
+      animation: fall linear infinite;
+      filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.8));
+    }
+    
+    @keyframes fall {
+      to {
+        transform: translateY(100vh);
+      }
+    }
+    
+    .container {
+      max-width: 1600px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 2;
+    }
+    
+    /* Logo Header */
+    .logo-header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    
+    .logo-header img {
+      max-width: 500px;
+      width: 100%;
+      height: auto;
+      filter: drop-shadow(0 8px 20px rgba(0,0,0,0.6)) drop-shadow(0 4px 10px rgba(0,0,0,0.4));
+    }
+    
+    /* Fallback wenn kein Bild geladen wird */
+    h1 {
+      text-align: center;
+      color: white;
+      font-size: 3em;
+      margin-bottom: 30px;
+      text-shadow: 0 4px 8px rgba(0,0,0,0.5), 0 2px 4px rgba(0,0,0,0.3);
+      font-family: 'Playfair Display', serif;
+      font-weight: 700;
+    }
+    
+    .hidden { display: none; }
+    
+    /* Calendar Styles */
+    #calendar {
+      color: white;
+    }
+    
+    .welcome-section {
+      text-align: center;
+      margin-bottom: 30px;
+      background: rgba(255,255,255,0.1);
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.1);
+      backdrop-filter: blur(10px);
+    }
+    
+    .welcome-section h2 {
+      font-size: 2em;
+      margin-bottom: 10px;
+      font-family: 'Playfair Display', serif;
+      font-weight: 700;
+      text-shadow: 0 3px 8px rgba(0,0,0,0.4);
+    }
+    
+    .welcome-section p {
+      font-size: 1.1em;
+    }
+    
+    /* Door Grid */
+    #doors {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 200px;
+      margin-top: 30px;
+    }
+    
+    /* Double Door Container */
+    .door-container {
+      position: relative;
+      height: 280px;
+      perspective: 1000px;
+      filter: drop-shadow(0 10px 30px rgba(0,0,0,0.5));
+    }
+    
+    .door-container:hover {
+      filter: drop-shadow(0 15px 40px rgba(0,0,0,0.6));
+    }
+    
+    /* Locked Door Styling */
+    .door-container.locked .door-left,
+    .door-container.locked .door-right {
+      cursor: not-allowed;
+      filter: brightness(0.6);
+    }
+    
+    .door-container.locked .door-left:hover,
+    .door-container.locked .door-right:hover {
+      filter: brightness(0.6);
+    }
+    
+    .door-content {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #2d3e6a 0%, #1e2c4a 100%);
+      border-radius: 12px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      border: 3px solid #13213c;
+      box-shadow: inset 0 2px 10px rgba(0,0,0,0.3), 0 4px 20px rgba(0,0,0,0.4);
+    }
+    
+    .door-content h3 {
+      color: white;
+      margin-bottom: 15px;
+      font-size: 1.3em;
+      text-align: center;
+      font-family: 'Playfair Display', serif;
+      font-weight: 700;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+    }
+    
+    .door-content .story-btn {
+      background: linear-gradient(135deg, #13213c 0%, #111723 100%);
+      color: white;
+      border: 2px solid #13213c;
+      margin-bottom: 15px;
+      font-weight: bold;
+      transition: all 0.3s;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+      cursor: pointer;
+      padding: 10px;
+      border-radius: 8px;
+    }
+    
+    .door-content .story-btn:hover {
+      background: linear-gradient(135deg, #1a2947 0%, #15182a 100%);
+      transform: scale(1.05);
+      box-shadow: 0 6px 20px rgba(255, 255, 255, 0.3), 0 0 20px rgba(255, 255, 255, 0.2);
+    }
+    
+    .door-content .close-btn {
+      width: 100%;
+      padding: 10px;
+      background: transparent;
+      border: 2px solid white;
+      color: white;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.3s;
+      margin-top: 10px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+    }
+    
+    .door-content .close-btn:hover {
+      background: rgba(255,255,255,0.1);
+      transform: scale(1.05);
+    }
+    
+    /* Double Doors */
+    .door-left, .door-right {
+      position: absolute;
+      top: 0;
+      width: 50%;
+      height: 100%;
+      background: linear-gradient(135deg, #2d4270 0%, #253356 50%, #1e2947 100%);
+      border: 3px solid #13213c;
+      transition: transform 1s ease-in-out;
+      transform-style: preserve-3d;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: inset 0 2px 8px rgba(255,255,255,0.1), 
+                  inset 0 -2px 8px rgba(0,0,0,0.3),
+                  0 4px 15px rgba(0,0,0,0.4);
+    }
+    
+    .door-left {
+      left: 0;
+      border-radius: 12px 0 0 12px;
+      transform-origin: left;
+    }
+    
+    .door-right {
+      right: 0;
+      border-radius: 0 12px 12px 0;
+      transform-origin: right;
+    }
+    
+    .door-container.open .door-left {
+      transform: rotateY(-120deg);
+    }
+    
+    .door-container.open .door-right {
+      transform: rotateY(120deg);
+    }
+    
+    .door-number {
+      color: white;
+      font-size: 3em;
+      font-weight: bold;
+      text-shadow: 0 4px 12px rgba(0,0,0,0.7), 
+                   0 2px 6px rgba(0,0,0,0.5),
+                   0 0 20px rgba(255,255,255,0.1);
+      pointer-events: none;
+      transition: opacity 0.3s;
+    }
+    
+    .door-container.open .door-number {
+      opacity: 0;
+    }
+    
+    .door-container.open .crystal-icon {
+      opacity: 0;
+    }
+    
+    .door-left .door-number {
+      margin-left: 20px;
+    }
+    
+    .door-right .door-number {
+      margin-right: 20px;
+    }
+    
+    /* Crystal Image on right door */
+    .crystal-icon {
+      width: 70px;
+      height: 70px;
+      object-fit: contain;
+      filter: drop-shadow(0 4px 12px rgba(255,255,255,0.4)) 
+              drop-shadow(0 2px 6px rgba(255,255,255,0.2));
+      transition: opacity 0.3s;
+    }
+    
+    .door-left:hover, .door-right:hover {
+      filter: brightness(1.15);
+      box-shadow: inset 0 2px 8px rgba(255,255,255,0.15), 
+                  inset 0 -2px 8px rgba(0,0,0,0.3),
+                  0 6px 20px rgba(0,0,0,0.5);
+    }
+    
+    /* Lock Icon */
+    .lock-container {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 10;
+      pointer-events: none;
+      transition: all 0.6s ease-out;
+      filter: drop-shadow(0 8px 16px rgba(0,0,0,0.6));
+    }
+    
+    .door-container:not(.locked) .lock-container {
+      display: none;
+    }
+    
+    .lock-icon {
+      width: 80px;
+      height: auto;
+    }
+    
+    /* Story Modal */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.8);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+      backdrop-filter: blur(5px);
+      animation: fadeIn 0.3s ease-out;
+    }
+    
+    .modal-overlay.active {
+      display: flex;
+    }
+    
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+    
+    .modal-content {
+      background: linear-gradient(135deg, #2d3e6a 0%, #132a4a 100%);
+      border: 3px solid #08121e;
+      border-radius: 20px;
+      padding: 40px;
+      max-width: 600px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7), 
+                  0 10px 30px rgba(0, 0, 0, 0.5),
+                  inset 0 1px 0 rgba(255,255,255,0.1);
+      animation: slideIn 0.4s ease-out;
+      position: relative;
+    }
+    
+    @keyframes slideIn {
+      from {
+        transform: translateY(-50px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+    
+    .modal-content h2 {
+      color: #FFFFFF;
+      font-family: 'Playfair Display', serif;
+      font-size: 2em;
+      margin-bottom: 20px;
+      text-align: center;
+      text-shadow: 0 3px 10px rgba(0,0,0,0.6);
+    }
+    
+    .modal-content p {
+      color: white;
+      font-size: 1.1em;
+      line-height: 1.8;
+      margin-bottom: 15px;
+      text-align: justify;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+    }
+    
+    .modal-close-btn {
+      width: 100%;
+      padding: 12px;
+      background: #6b81b2;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: bold;
+      margin-top: 20px;
+      transition: all 0.3s;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+    }
+    
+    .modal-close-btn:hover {
+      background: #7a91c7;
+      transform: scale(1.05);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+    }
+    
+    /* Responsive */
+    @media (max-width: 1000px) {
+      #doors {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 90px;
+      }
+      
+      .logo-header img {
+        max-width: 400px;
+      }
+    }
+    
+    @media (max-width: 700px) {
+      #doors {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 70px;
+      }
+      
+      .door-container {
+        height: 250px;
+      }
+      
+      h1 {
+        font-size: 2em;
+      }
+      
+      .logo-header img {
+        max-width: 300px;
+      }
+      
+      .lock-icon {
+        width: 90px;
+        height: 100px;
+      }
+    }
+    
+    @media (max-width: 500px) {
+      #doors {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      
+      .logo-header img {
+        max-width: 250px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Logo Header - Ersetze "bgr.png" mit deinem Bildpfad -->
+    <div class="logo-header">
+      <img src="bgr.png" alt="Adventskalender" onerror="this.style.display='none'; document.getElementById('fallback-title').style.display='block';">
+    </div>
+    <h1 id="fallback-title" style="display: none;">🎄 Adventskalender 🎄</h1>
+    
+    <div id="calendar">
+      <div class="welcome-section">
+        <h2>Willkommen beim Adventskalender ✨</h2>
+        <p>Jeden Tag öffnet sich ein neues Türchen mit einer kleinen Aufgabe oder Nachricht.</p>
+      </div>
+      <div id="doors"></div>
+    </div>
+  </div>
+
+  <!-- Story Modal -->
+  <div class="modal-overlay" id="storyModal">
+    <div class="modal-content">
+      <h2 id="modalTitle">Türchen</h2>
+      <div id="modalStory"></div>
+      <button class="modal-close-btn" onclick="closeStoryModal()">Schließen</button>
+    </div>
+  </div>
+
+  <script>
+    // Schneeflocken
+    function createSnowflake() {
+      const snowflake = document.createElement('div');
+      snowflake.classList.add('snowflake');
+      snowflake.innerHTML = '❄';
+      snowflake.style.left = Math.random() * 100 + '%';
+      snowflake.style.animationDuration = Math.random() * 3 + 5 + 's';
+      snowflake.style.opacity = Math.random();
+      snowflake.style.fontSize = Math.random() * 10 + 10 + 'px';
+      
+      document.body.appendChild(snowflake);
+      
+      setTimeout(() => {
+        snowflake.remove();
+      }, 8000);
+    }
+    
+    setInterval(createSnowflake, 200);
+    
+    for (let i = 0; i < 50; i++) {
+      setTimeout(createSnowflake, i * 100);
+    }
+
+    // Platzhalter-Texte für jedes Türchen
+    const storyTexts = {};
+    for (let i = 1; i <= 24; i++) {
+      storyTexts[i] = `<p>PLATZHALTER</p>`;
+    }
+
+    function openStoryModal(doorNumber) {
+      document.getElementById('modalTitle').innerText = 'Türchen ' + doorNumber;
+      document.getElementById('modalStory').innerHTML = storyTexts[doorNumber] || '<p>PLATZHALTER</p>';
+      document.getElementById('storyModal').classList.add('active');
+    }
+
+    function closeStoryModal() {
+      document.getElementById('storyModal').classList.remove('active');
+    }
+
+    // Modal schließen beim Klick außerhalb
+    document.addEventListener('click', function(event) {
+      const modal = document.getElementById('storyModal');
+      if (event.target === modal) {
+        closeStoryModal();
+      }
+    });
+
+    // Tür-Logik: Türen in Dezember, alle Tage bis inkl. heutigem Datum freigeschaltet
+    function isDoorUnlocked(doorNumber) {
+      const now = new Date();
+      const currentDay = now.getDate();
+      const currentMonth = now.getMonth() + 1; // 0-indexed
+      
+      if (currentMonth === 12 && doorNumber <= currentDay) {
+        return true; // 1..heutiger Tag sind freigeschaltet
+      }
+      return false;
+    }
+
+    function toggleDoor(i) {
+      const container = document.getElementById("door-container-" + i);
+      
+      // Check if door is locked
+      if (container.classList.contains("locked")) {
+        alert("Dieses Türchen kann erst am " + i + ". Dezember geöffnet werden! 🎄");
+        return;
+      }
+      
+      // Nur auf/zu klappen (keine Persistenz nötig)
+      if (container.classList.contains("open")) {
+        container.classList.remove("open");
+      } else {
+        container.classList.add("open");
+      }
+    }
+
+    function buildCalendar() {
+      const container = document.getElementById("doors");
+      container.innerHTML = "";
+      
+      for (let i = 1; i <= 24; i++) {
+        const doorContainer = document.createElement("div");
+        doorContainer.className = "door-container";
+        doorContainer.id = "door-container-" + i;
+        
+        const isUnlocked = isDoorUnlocked(i);
+        if (!isUnlocked) {
+          doorContainer.classList.add("locked");
+        }
+        
+        const lockHTML = !isUnlocked ? `
+          <div class="lock-container">
+            <img src="lockn.png" class="lock-icon" alt="Locked">
+          </div>
+        ` : '';
+        
+        doorContainer.innerHTML = `
+          <div class="door-content">
+            <h3>Türchen ${i}</h3>
+            <button class="story-btn" onclick="openStoryModal(${i})">✉ Nachricht öffnen</button>
+            <button class="close-btn" onclick="toggleDoor(${i})">Tür schließen / öffnen</button>
+          </div>
+          ${lockHTML}
+          <div class="door-left" onclick="toggleDoor(${i})">
+            <div class="door-number">${i}</div>
+          </div>
+          <div class="door-right" onclick="toggleDoor(${i})">
+            <img src="glasb.png" class="crystal-icon" alt="Crystal" onerror="this.style.display='none'; this.parentElement.innerHTML += '<div class=\\'door-number\\'>🎁</div>';">
+          </div>
+        `;
+        
+        container.appendChild(doorContainer);
+      }
+    }
+
+    // Kalender initial aufbauen
+    buildCalendar();
+  </script>
+</body>
+</html>
