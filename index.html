@@ -10,7 +10,11 @@
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
   
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
     
     body { 
       font-family: 'Poppins', sans-serif;
@@ -31,6 +35,7 @@
       font-weight: 700;
     }
 
+    /* Snowflakes */
     .snowflake {
       position: fixed;
       top: -10px;
@@ -40,18 +45,25 @@
       z-index: 1;
       pointer-events: none;
       animation: fall linear infinite;
+      filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.8));
     }
 
-    @keyframes fall { to { transform: translateY(100vh); } }
+    @keyframes fall {
+      to {
+        transform: translateY(100vh);
+      }
+    }
 
     .container {
-      max-width: 1600px;
+      max-width: 1400px;
       margin: 0 auto;
       position: relative;
       z-index: 2;
     }
 
-    #calendar { color: white; }
+    #calendar {
+      color: white;
+    }
 
     .welcome-section {
       text-align: center;
@@ -63,10 +75,17 @@
       backdrop-filter: blur(10px);
     }
 
+    .welcome-section h2 {
+      font-size: 1.8em;
+      margin-bottom: 10px;
+      font-family: 'Playfair Display', serif;
+    }
+
+    /* Door grid */
     #doors {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 200px;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 60px;
       margin-top: 30px;
     }
 
@@ -74,12 +93,13 @@
       position: relative;
       height: 280px;
       perspective: 1000px;
+      filter: drop-shadow(0 10px 25px rgba(0,0,0,0.5));
     }
 
     .door-container.locked .door-left,
     .door-container.locked .door-right {
       cursor: not-allowed;
-      filter: brightness(0.6);
+      filter: brightness(0.7);
     }
 
     .door-content {
@@ -93,6 +113,7 @@
       flex-direction: column;
       justify-content: center;
       border: 3px solid #13213c;
+      z-index: 1;
     }
 
     .door-content h3 {
@@ -100,9 +121,11 @@
       margin-bottom: 15px;
       text-align: center;
       font-family: 'Playfair Display', serif;
+      font-size: 1.3em;
     }
 
-    .story-btn, .close-btn {
+    .story-btn,
+    .close-btn {
       padding: 10px;
       width: 100%;
       margin-bottom: 10px;
@@ -110,6 +133,7 @@
       cursor: pointer;
       font-weight: bold;
       border: none;
+      transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
     }
 
     .story-btn {
@@ -118,13 +142,27 @@
       border: 2px solid #13213c;
     }
 
+    .story-btn:hover {
+      background: #1c2b4a;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+      transform: translateY(-1px);
+    }
+
     .close-btn {
       background: transparent;
       border: 2px solid white;
       color: white;
     }
 
-    .door-left, .door-right {
+    .close-btn:hover {
+      background: rgba(255,255,255,0.1);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      transform: translateY(-1px);
+    }
+
+    /* Door wings */
+    .door-left,
+    .door-right {
       position: absolute;
       top: 0;
       width: 50%;
@@ -135,41 +173,132 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: transform 1s;
+      transition: transform 1s ease-in-out;
+      transform-style: preserve-3d;
+      z-index: 2;
     }
 
-    .door-left { left: 0; transform-origin: left; border-radius: 12px 0 0 12px; }
-    .door-right { right: 0; transform-origin: right; border-radius: 0 12px 12px 0; }
+    .door-left {
+      left: 0;
+      transform-origin: left;
+      border-radius: 12px 0 0 12px;
+    }
 
-    .door-container.open .door-left { transform: rotateY(-120deg); }
-    .door-container.open .door-right { transform: rotateY(120deg); }
+    .door-right {
+      right: 0;
+      transform-origin: right;
+      border-radius: 0 12px 12px 0;
+    }
 
-    .door-number { font-size: 3em; color: white; }
+    .door-container.open .door-left {
+      transform: rotateY(-120deg);
+    }
+
+    .door-container.open .door-right {
+      transform: rotateY(120deg);
+    }
+
+    .door-number {
+      font-size: 3em;
+      color: white;
+      text-shadow: 0 3px 8px rgba(0,0,0,0.7);
+      pointer-events: none;
+    }
+
+    .door-container.open .door-number {
+      opacity: 0;
+    }
+
+    /* Candy cane icon */
+    .crystal-icon {
+      width: 120px;       /* mittelgroß */
+      height: auto;
+      object-fit: contain;
+      image-rendering: pixelated; /* pixelart-look */
+      pointer-events: none;
+      filter: drop-shadow(0 4px 10px rgba(0,0,0,0.6));
+    }
+
+    .door-container.open .crystal-icon {
+      opacity: 0;
+    }
+
+    /* Lock icon */
+    .lock-container {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 3;
+      pointer-events: none;
+      filter: drop-shadow(0 6px 14px rgba(0,0,0,0.7));
+    }
+
+    .door-container:not(.locked) .lock-container {
+      display: none;
+    }
+
+    .lock-icon {
+      width: 80px;
+      height: auto;
+      image-rendering: pixelated;
+    }
 
     /* Modal */
     .modal-overlay {
       display: none;
       position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
       background: rgba(0,0,0,0.8);
       z-index: 1000;
       align-items: center;
       justify-content: center;
+      backdrop-filter: blur(4px);
     }
 
-    .modal-overlay.active { display: flex; }
+    .modal-overlay.active {
+      display: flex;
+    }
 
     .modal-content {
       background: #2d3e6a;
-      padding: 40px;
+      padding: 30px 35px;
       border-radius: 20px;
       max-width: 600px;
       width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.7);
     }
 
-    .modal-content h2 { color: white; text-align: center; margin-bottom: 20px; }
-    .modal-content p { color: white; line-height: 1.7; }
+    .modal-content h2 {
+      color: white;
+      text-align: center;
+      margin-bottom: 20px;
+      font-family: 'Playfair Display', serif;
+    }
 
+    .modal-content p {
+      color: white;
+      line-height: 1.7;
+      margin-bottom: 10px;
+    }
+
+    .modal-content .close-btn {
+      margin-top: 15px;
+    }
+
+    @media (max-width: 700px) {
+      .main-title {
+        font-size: 2.3em;
+      }
+      .door-container {
+        height: 260px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -187,6 +316,7 @@
     </div>
   </div>
 
+  <!-- Modal -->
   <div class="modal-overlay" id="storyModal">
     <div class="modal-content">
       <h2 id="modalTitle">Türchen</h2>
@@ -195,100 +325,119 @@
     </div>
   </div>
 
-<script>
-  // Schneeflocken
-  function createSnowflake() {
-    const s = document.createElement('div');
-    s.classList.add('snowflake');
-    s.innerHTML = '❄';
-    s.style.left = Math.random() * 100 + '%';
-    s.style.animationDuration = Math.random() * 3 + 5 + 's';
-    s.style.fontSize = Math.random() * 10 + 10 + 'px';
-    document.body.appendChild(s);
-    setTimeout(() => s.remove(), 8000);
-  }
-  setInterval(createSnowflake, 200);
-  for (let i = 0; i < 50; i++) setTimeout(createSnowflake, i * 100);
-
-  // Individuelle Platzhaltertexte
-  const storyTexts = {
-    1: "<p>Dies ist dein Platzhalter-Text für Türchen 1. Hier kannst du später deine eigene Aufgabe einfügen.</p>",
-    2: "<p>Platzhalter für Türchen 2 – dieser Text wartet darauf, von dir ersetzt zu werden.</p>",
-    3: "<p>Hier könnte im Dezember eine kleine Aufgabe oder Botschaft stehen.</p>",
-    4: "<p>Platzhalter für Tür 4. Füge später deinen eigenen Text ein.</p>",
-    5: "<p>Noch ein Platzhalter: Türchen 5 wartet auf deine Idee.</p>",
-    6: "<p>Dies ist ein Beispieltext für Tür 6. Passe ihn später nach deinem Geschmack an.</p>",
-    7: "<p>Tür 7 enthält derzeit nur einen Platzhalter – bald deine Aufgabe!</p>",
-    8: "<p>Ein weiterer neutraler Text für Türchen 8.</p>",
-    9: "<p>Hier kannst du später eine Nachricht oder Aufgabe eintragen.</p>",
-    10: "<p>Platzhalter für Tür 10 – einfach ersetzen, wenn du soweit bist.</p>",
-    11: "<p>Hier befindet sich ein Beispiel-Text für Tür 11.</p>",
-    12: "<p>Platzhalter: Türchen 12 wartet auf deinen Inhalt.</p>",
-    13: "<p>Ein generischer Text als Platzhalter für Tür 13.</p>",
-    14: "<p>Hier könnte etwas Schönes stehen – aktuell nur ein Platzhalter.</p>",
-    15: "<p>Tür 15: Platzhalter-Inhalt, später austauschbar.</p>",
-    16: "<p>Neutraler Beispieltext für Türchen 16.</p>",
-    17: "<p>Noch ein Platzhalter, diesmal für Türchen 17.</p>",
-    18: "<p>Beispieltext in Tür 18 – ersetze mich!</p>",
-    19: "<p>Tür 19 Platzhalter: Hier kommt später deine Aufgabe hin.</p>",
-    20: "<p>Ein einfacher, neutraler Text für Türchen 20.</p>",
-    21: "<p>Platzhalter für Tür 21 – ändere mich, wann immer du möchtest.</p>",
-    22: "<p>Beispielinhalt für Türchen 22.</p>",
-    23: "<p>Vorletzter Platzhalter – Türchen 23.</p>",
-    24: "<p>Tür 24: Ein weihnachtlicher Platzhaltertext, bereit ersetzt zu werden.</p>"
-  };
-
-  function openStoryModal(n) {
-    document.getElementById('modalTitle').innerText = 'Türchen ' + n;
-    document.getElementById('modalStory').innerHTML = storyTexts[n];
-    document.getElementById('storyModal').classList.add('active');
-  }
-
-  function closeStoryModal() {
-    document.getElementById('storyModal').classList.remove('active');
-  }
-
-  function isDoorUnlocked(n) {
-    const now = new Date();
-    return now.getMonth() + 1 === 12 && now.getDate() >= n;
-  }
-
-  function toggleDoor(n) {
-    const el = document.getElementById("door-container-" + n);
-    if (el.classList.contains("locked")) return alert("Dieses Türchen öffnet sich am " + n + ". Dezember!");
-    el.classList.toggle("open");
-  }
-
-  function buildCalendar() {
-    const c = document.getElementById("doors");
-    for (let i = 1; i <= 24; i++) {
-      const unlocked = isDoorUnlocked(i);
-      const door = document.createElement("div");
-      door.className = "door-container";
-      door.id = "door-container-" + i;
-      if (!unlocked) door.classList.add("locked");
-
-      door.innerHTML = `
-        <div class="door-content">
-          <h3>Türchen ${i}</h3>
-          <button class="story-btn" onclick="openStoryModal(${i})">✉ Nachricht öffnen</button>
-          <button class="close-btn" onclick="toggleDoor(${i})">Tür schließen / öffnen</button>
-        </div>
-
-        ${!unlocked ? `<div class='lock-container'><img src='schloss.png' class='lock-icon'></div>` : ""}
-
-        <div class="door-left" onclick="toggleDoor(${i})">
-          <div class="door-number">${i}</div>
-        </div>
-        <div class="door-right" onclick="toggleDoor(${i})">
-          <img src="zuckerstange.png" class="crystal-icon" onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=door-number>🎁</div>';">
-        </div>
-      `;
-      c.appendChild(door);
+  <script>
+    // Schneeflocken
+    function createSnowflake() {
+      const s = document.createElement('div');
+      s.classList.add('snowflake');
+      s.innerHTML = '❄';
+      s.style.left = Math.random() * 100 + '%';
+      s.style.animationDuration = Math.random() * 3 + 5 + 's';
+      s.style.fontSize = Math.random() * 10 + 10 + 'px';
+      document.body.appendChild(s);
+      setTimeout(() => s.remove(), 8000);
     }
-  }
+    setInterval(createSnowflake, 200);
+    for (let i = 0; i < 50; i++) setTimeout(createSnowflake, i * 100);
 
-  buildCalendar();
-</script>
+    // Lustige Challenges / Fragen
+    const storyTexts = {
+      1: "<p>Wenn du plötzlich für einen Tag jede Sprache der Welt fließend sprechen könntest – was würdest du damit zuerst tun?</p>",
+      2: "<p>Mach ein Selfie, bei dem du so ernst wie möglich schaust. Keine Emotionen. Null. Absolut stoisch. (Bonus, wenn’s trotzdem witzig aussieht.)</p>",
+      3: "<p>Wähle ein Lied, das absolut NICHT zum Winter passt, und sing mindestens eine Zeile davon. Video oder Audio ist erlaubt.</p>",
+      4: "<p>Wenn du dir eine völlig unnötige Superkraft aussuchen könntest (z. B. Brot perfekt schneiden) – welche wäre es?</p>",
+      5: "<p>Fotografiere einen zufälligen Gegenstand in deiner Wohnung so, dass er wichtig und mysteriös wirkt.</p>",
+      6: "<p>Mach ein Video, in dem du einen Zungenbrecher deiner Wahl sagst. Je schlimmer du stolperst, desto besser.</p>",
+      7: "<p>Erfinde einen neuen Feiertag, der nur für dich existiert. Was feiert man da und was ist die Tradition?</p>",
+      8: "<p>Schick ein Foto von etwas, das du eigentlich schon lange aufräumen wolltest … aber ja, nein.</p>",
+      9: "<p>Was ist das unnötigste Talent, das du besitzt – oder gerne besitzen würdest?</p>",
+      10: "<p>Finde einen Gegenstand, der deine aktuelle Stimmung perfekt beschreibt. Mach ein Bild davon.</p>",
+      11: "<p>Wenn du ein Videospiel- oder Anime-Charakter wärst – was wäre deine Spezialattacke?</p>",
+      12: "<p>Schreib drei Dinge auf, die du dieses Jahr geschafft hast, auch wenn sie klein sind. Kleine Wins zählen.</p>",
+      13: "<p>Mach ein Foto von etwas, das aussieht, als hätte es ein Gesicht. (Pareidolie-Challenge.)</p>",
+      14: "<p>Schick mir einen Song, der dich sofort motiviert – egal warum.</p>",
+      15: "<p>Wenn du eine Alltagssache wie in einem Game patchen könntest – welchen „Bug“ im echten Leben würdest du fixen?</p>",
+      16: "<p>Zeichne (schlecht ist explizit erlaubt) ein kleines Monster, das deine Energielevel heute repräsentiert. Foto davon schicken.</p>",
+      17: "<p>Gibt es irgendwas an der kalten Jahreszeit, das du wirklich magst? Schreib es auf – auch wenn es random ist.</p>",
+      18: "<p>Erfinde ein neues Wintergetränk. Gib ihm einen möglichst dummen Namen und beschreibe grob, was drin wäre.</p>",
+      19: "<p>Was ist das randomste Faktwissen, das du im Kopf hast? Hau es raus.</p>",
+      20: "<p>Mach ein 5-Sekunden-Video, in dem du so bedrohlich wie möglich aussiehst … während du etwas völlig Harmloses in der Hand hältst.</p>",
+      21: "<p>Finde einen Gegenstand, der deiner Meinung nach unterschätzt wird. Warum verdient er mehr Respekt?</p>",
+      22: "<p>Wenn du ein unmögliches Haustier haben könntest (Mini-Drache, Blob, Wolkenkätzchen …) – was wäre es und wie würdest du es nennen?</p>",
+      23: "<p>Schicke ein Meme, das deine aktuelle Stimmung zu 100 % beschreibt.</p>",
+      24: "<p>Wenn du dir für 2025 eine Sache wünschen könntest, die nicht materiell ist – was wäre das?</p>"
+    };
+
+    function openStoryModal(n) {
+      document.getElementById('modalTitle').innerText = 'Türchen ' + n;
+      document.getElementById('modalStory').innerHTML = storyTexts[n] || "<p>Hier ist eine Aufgabe für dich.</p>";
+      document.getElementById('storyModal').classList.add('active');
+    }
+
+    function closeStoryModal() {
+      document.getElementById('storyModal').classList.remove('active');
+    }
+
+    document.addEventListener('click', function (e) {
+      const modal = document.getElementById('storyModal');
+      if (e.target === modal) {
+        closeStoryModal();
+      }
+    });
+
+    // Türchen-Logik: in Dezember alle Tage bis inkl. heutigem Datum freigeschaltet
+    function isDoorUnlocked(n) {
+      const now = new Date();
+      const currentMonth = now.getMonth() + 1;
+      const currentDay = now.getDate();
+      return currentMonth === 12 && currentDay >= n;
+    }
+
+    function toggleDoor(n) {
+      const el = document.getElementById("door-container-" + n);
+      if (el.classList.contains("locked")) {
+        alert("Dieses Türchen öffnet sich am " + n + ". Dezember!");
+        return;
+      }
+      el.classList.toggle("open");
+    }
+
+    function buildCalendar() {
+      const c = document.getElementById("doors");
+      c.innerHTML = "";
+
+      for (let i = 1; i <= 24; i++) {
+        const unlocked = isDoorUnlocked(i);
+        const door = document.createElement("div");
+        door.className = "door-container";
+        door.id = "door-container-" + i;
+        if (!unlocked) door.classList.add("locked");
+
+        door.innerHTML = `
+          <div class="door-content">
+            <h3>Türchen ${i}</h3>
+            <button class="story-btn" onclick="openStoryModal(${i})">✉ Aufgabe anzeigen</button>
+            <button class="close-btn" onclick="toggleDoor(${i})">Tür schließen / öffnen</button>
+          </div>
+
+          ${!unlocked ? `
+            <div class="lock-container">
+              <img src="schloss.png" class="lock-icon" alt="Schloss">
+            </div>` : ""}
+
+          <div class="door-left" onclick="toggleDoor(${i})">
+            <div class="door-number">${i}</div>
+          </div>
+          <div class="door-right" onclick="toggleDoor(${i})">
+            <img src="zuckerstange.png" class="crystal-icon" alt="Zuckerstange"
+                 onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=&quot;door-number&quot;>🎁</div>';">
+          </div>
+        `;
+        c.appendChild(door);
+      }
+    }
+
+    buildCalendar();
+  </script>
 </body>
 </html>
